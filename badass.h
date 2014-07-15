@@ -3,11 +3,11 @@
 #include <limits>
 #include <cmath>
 
-namespace badass {}
 constexpr double dlim = std::pow(10, -(std::numeric_limits<double>::digits10 + 1l));
 
-#ifndef NDEBUG
 #include "src/badass_meat.h"
+
+#ifndef NDEBUG
 
 #define BADAss(A, OP, B, ...) \
     (((A) OP (B)) \

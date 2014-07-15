@@ -12,7 +12,6 @@ using namespace badass;
 #define ADD_TEST_SUCCESS() CHECK_EQUAL(1, 1)
 #define ADD_TEST_FAILURE() CHECK_EQUAL(1, 0)
 
-#ifndef NDEBUG
 
 TEST(ExceptionContents)
 {
@@ -135,11 +134,14 @@ TEST(RandomCases)
 
 }
 
-#endif
-
 int main()
 {
     cout << "Running badass tests." << endl;
+
+#ifdef NDEBUG
+    cerr << "Debug mode needed." << endl;
+    return 1;
+#endif
 
     return UnitTest::RunAllTests();
 }
