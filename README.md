@@ -16,7 +16,8 @@ using namespace badass;
 
 try
 {
-    BADAss(0, ==, 1, "Zero should not be one!", [&] (const BADAssException &exc)
+    int one = 0;
+    BADAss(one, ==, 1, "One should be 1!", [&] (const BADAssException &exc)
     {
 
         cout << exc.leftHandSide() << " mismatched " << exc.rightHandSide()
