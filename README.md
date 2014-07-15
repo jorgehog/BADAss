@@ -1,5 +1,5 @@
-##BADAssert is an assert framework desgined for easy and clean yet very descriptive assertion calls.
-##The goal is to improve efficiency and transparency of assertion calls by using user defined functions which trigger only on assertion breaks.
+###BADAssert is an assert framework desgined for easy and clean yet very descriptive assertion calls.
+###The goal is to improve efficiency and transparency of assertion calls by using user defined functions which trigger only on assertion breaks.
 
 ###Please see the test source file for examples of use.
 
