@@ -9,6 +9,7 @@ SOURCES += \
 LIBS += -lunittest++
 
 QMAKE_CXXFLAGS += -std=c++11
+QMAKE_CXXFLAGS_RELEASE += -DNDEBUG
 
 OTHER_FILES +=
 

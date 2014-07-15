@@ -3,6 +3,7 @@
 #include <limits>
 #include <cmath>
 
+namespace badass {}
 constexpr double dlim = std::pow(10, -(std::numeric_limits<double>::digits10 + 1l));
 
 #ifndef NDEBUG
