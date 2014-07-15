@@ -3,13 +3,15 @@ CONFIG -= qt
 
 TEMPLATE = app
 
-SOURCES += badassert_tests.cpp
+SOURCES += \
+    badass_tests.cpp
 
 LIBS += -lunittest++
 
 QMAKE_CXXFLAGS += -std=c++11
 
-OTHER_FILES += ../badassert.h
+OTHER_FILES +=
 
 HEADERS += \
-    ../src/badassert_meat.h
+    ../src/badass_meat.h \
+    ../badass.h

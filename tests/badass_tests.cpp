@@ -2,10 +2,10 @@
 
 #include <unittest++/UnitTest++.h>
 
-#include "../badassert.h"
+#include "../badass.h"
 
 using namespace std;
-using namespace badassert;
+using namespace badass;
 
 #define GETLINE() __LINE__
 #define GETFILE() __FILE__
@@ -20,7 +20,7 @@ TEST(ExceptionContents)
 
     try
     {
-        BADAssert(0, ==, 1, "Zero should not be one!", [&] (const AssertException &exc)
+        BADAss(0, ==, 1, "Zero should not be one!", [&] (const BADAssException &exc)
         {
             CHECK_EQUAL(0, atoi(exc.leftHandSide().c_str()));
             CHECK_EQUAL(1, atoi(exc.rightHandSide().c_str()));
@@ -33,7 +33,7 @@ TEST(ExceptionContents)
 
         });
     }
-    catch (const AssertException &exc)
+    catch (const BADAssException &exc)
     {
 
     }
@@ -44,10 +44,10 @@ TEST(RandomCases)
 {
     try
     {
-        BADAssert(1, ==, 0);
+        BADAss(1, ==, 0);
         ADD_TEST_FAILURE();
     }
-    catch(const AssertException &exc)
+    catch(const BADAssException &exc)
     {
         ADD_TEST_SUCCESS();
     }
@@ -55,20 +55,20 @@ TEST(RandomCases)
 
     try
     {
-        BADAssert(1, ==, 0, "testing testing");
+        BADAss(1, ==, 0, "testing testing");
         ADD_TEST_FAILURE();
     }
-    catch(const AssertException &exc)
+    catch(const BADAssException &exc)
     {
         CHECK_EQUAL("testing testing", exc.description());
     }
 
     try
     {
-        BADAssert(0, ==, 0);
+        BADAss(0, ==, 0);
         ADD_TEST_SUCCESS();
     }
-    catch(const AssertException &exc)
+    catch(const BADAssException &exc)
     {
         ADD_TEST_FAILURE();
     }
@@ -76,10 +76,10 @@ TEST(RandomCases)
 
     try
     {
-        BADAssertEqual(0, true);
+        BADAssEqual(0, true);
         ADD_TEST_FAILURE();
     }
-    catch(const AssertException &exc)
+    catch(const BADAssException &exc)
     {
         ADD_TEST_SUCCESS();
         CHECK_EQUAL("true", exc.rightHandSide());
@@ -88,10 +88,10 @@ TEST(RandomCases)
 
     try
     {
-        BADAssertEqual(1, 0);
+        BADAssEqual(1, 0);
         ADD_TEST_FAILURE();
     }
-    catch(const AssertException &exc)
+    catch(const BADAssException &exc)
     {
         ADD_TEST_SUCCESS();
         CHECK_EQUAL("1", exc.leftHandSide());
@@ -101,16 +101,16 @@ TEST(RandomCases)
 
     try
     {
-        BADAssertClose(1, 1.1, 0.2);
+        BADAssClose(1, 1.1, 0.2);
         ADD_TEST_SUCCESS();
 
-        BADAssertClose(1, 1.1, 0.1);
+        BADAssClose(1, 1.1, 0.1);
         ADD_TEST_SUCCESS();
 
-        BADAssertClose(1, 1.1, 0.05);
+        BADAssClose(1, 1.1, 0.05);
         ADD_TEST_FAILURE();
     }
-    catch(const AssertException &exc)
+    catch(const BADAssException &exc)
     {
         ADD_TEST_SUCCESS();
         CHECK_EQUAL("1.1 - 1", exc.leftHandSide());
@@ -121,14 +121,14 @@ TEST(RandomCases)
 
     try
     {
-        BADAssertBreak("Oh no!", [&] (const AssertException &exc)
+        BADAssBreak("Oh no!", [&] (const BADAssException &exc)
         {
             CHECK_EQUAL("Oh no!", exc.description());
         });
 
         ADD_TEST_FAILURE();
     }
-    catch(const AssertException &exc)
+    catch(const BADAssException &exc)
     {
         ADD_TEST_SUCCESS();
     }
@@ -139,7 +139,7 @@ TEST(RandomCases)
 
 int main()
 {
-    cout << "Running badassert tests." << endl;
+    cout << "Running badass tests." << endl;
 
     return UnitTest::RunAllTests();
 }

@@ -1,22 +1,22 @@
 ##Beautiful And Descriptive Assert
 ----------------------------
 
-###BADAssert is an assert framework desgined for easy and clean yet very descriptive assertion calls.
+###BADASS is an assert framework desgined for easy and clean yet very descriptive assertion calls.
 ###The goal is to improve efficiency and transparency of assertion calls by using user defined functions which trigger only on assertion breaks.
 
 ###Please see the test source file for examples of use.
 
 
 ```
-#include <badassert.h>
+#include <badass.h>
 #include <iostream>
 
 using namespace std;
-using namespace badassert;
+using namespace badass;
 
 try
 {
-    BADAssert(0, ==, 1, "Zero should not be one!", [&] (const AssertException &exc)
+    BADASS(0, ==, 1, "Zero should not be one!", [&] (const AssertException &exc)
     {
 
         cout << exc.leftHandSide() << " mismatched " << exc.rightHandSide()

@@ -8,15 +8,15 @@ using std::string;
 using std::cerr;
 using std::endl;
 
-namespace badassert
+namespace badass
 {
 
 
-class AssertException : public std::exception
+class BADAssException : public std::exception
 {
 
 public:
-    AssertException(const char * OP,
+    BADAssException(const char * OP,
                  const char * A,
                  const char * B,
                  const char * file,
@@ -73,7 +73,7 @@ private:
 
 };
 
-typedef std::function<void(const AssertException &exc)> assertFireFuncType;
+typedef std::function<void(const BADAssException &exc)> assertFireFuncType;
 
 void _searchRepl(string & _string, string _find, string _repl)
 {
@@ -170,7 +170,7 @@ fireAssert(aT Aval,
            const assertFireFuncType &onFireFunc)
 {
 
-    AssertException exc(OP,
+    BADAssException exc(OP,
                      A,
                      B,
                      file,
@@ -197,41 +197,41 @@ fireAssert(aT Aval,
            int line,
            string what = "")
 {
-    fireAssert(Aval, Bval, OP, A, B, file, func, line, what, [] (const AssertException &exc) {(void) exc;});
+    fireAssert(Aval, Bval, OP, A, B, file, func, line, what, [] (const BADAssException &exc) {(void) exc;});
 }
 
 
-const std::string AssertException::comparisonOperator() const
+const std::string BADAssException::comparisonOperator() const
 {
     return m_comparisonOperator;
 }
 
-const std::string AssertException::leftHandSide() const
+const std::string BADAssException::leftHandSide() const
 {
     return m_leftHandSide;
 }
 
-const std::string AssertException::rightHandSide() const
+const std::string BADAssException::rightHandSide() const
 {
     return m_rightHandSide;
 }
 
-const std::string AssertException::whichFile() const
+const std::string BADAssException::whichFile() const
 {
     return m_whichFile;
 }
 
-const std::string AssertException::whichFunction() const
+const std::string BADAssException::whichFunction() const
 {
     return m_whichFunction;
 }
 
-int AssertException::whichLine() const
+int BADAssException::whichLine() const
 {
     return m_whichLine;
 }
 
-string AssertException::description() const
+string BADAssException::description() const
 {
     return m_description;
 }
