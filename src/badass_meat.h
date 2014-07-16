@@ -11,7 +11,6 @@ using std::endl;
 namespace badass
 {
 
-
 class BADAssException : public std::exception
 {
 
@@ -42,19 +41,40 @@ public:
         return m_message.c_str();
     }
 
-    const string comparisonOperator() const;
+    const string comparisonOperator() const
+    {
+        return m_comparisonOperator;
+    }
 
-    const string leftHandSide() const;
+    const string leftHandSide() const
+    {
+        return m_leftHandSide;
+    }
 
-    const string rightHandSide() const;
+    const string rightHandSide() const
+    {
+        return m_rightHandSide;
+    }
 
-    const string whichFile() const;
+    const string whichFile() const
+    {
+        return m_whichFile;
+    }
 
-    const string whichFunction() const;
+    const string whichFunction() const
+    {
+        return m_whichFunction;
+    }
 
-    int whichLine() const;
+    int whichLine() const
+    {
+        return m_whichLine;
+    }
 
-    string description() const;
+    const std::string description() const
+    {
+        return m_description;
+    }
 
 private:
 
@@ -75,7 +95,7 @@ private:
 
 typedef std::function<void(const BADAssException &exc)> assertFireFuncType;
 
-void _searchRepl(string & _string, string _find, string _repl)
+inline void _searchRepl(string & _string, string _find, string _repl)
 {
 
     int position = _string.find(_find);
@@ -87,7 +107,9 @@ void _searchRepl(string & _string, string _find, string _repl)
 }
 
 template<typename aT, typename bT>
-static string getAssertMessage(aT Aval,
+inline
+string
+getAssertMessage(aT Aval,
                                bT Bval,
                                const char * OP,
                                const char * A,
@@ -157,6 +179,7 @@ static string getAssertMessage(aT Aval,
 }
 
 template<typename aT, typename bT>
+inline
 void
 fireAssert(aT Aval,
            bT Bval,
@@ -186,6 +209,7 @@ fireAssert(aT Aval,
 }
 
 template<typename aT, typename bT>
+inline
 void
 fireAssert(aT Aval,
            bT Bval,
@@ -199,42 +223,5 @@ fireAssert(aT Aval,
 {
     fireAssert(Aval, Bval, OP, A, B, file, func, line, what, [] (const BADAssException &exc) {(void) exc;});
 }
-
-
-const std::string BADAssException::comparisonOperator() const
-{
-    return m_comparisonOperator;
-}
-
-const std::string BADAssException::leftHandSide() const
-{
-    return m_leftHandSide;
-}
-
-const std::string BADAssException::rightHandSide() const
-{
-    return m_rightHandSide;
-}
-
-const std::string BADAssException::whichFile() const
-{
-    return m_whichFile;
-}
-
-const std::string BADAssException::whichFunction() const
-{
-    return m_whichFunction;
-}
-
-int BADAssException::whichLine() const
-{
-    return m_whichLine;
-}
-
-string BADAssException::description() const
-{
-    return m_description;
-}
-
 
 }
