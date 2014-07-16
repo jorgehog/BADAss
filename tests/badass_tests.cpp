@@ -19,10 +19,9 @@ TEST(ExceptionContents)
 
     try
     {
-        int one = 0;
-        BADAss(one, ==, 1, "One should be 1!", [&] (const BADAssException &exc)
+        BADAss(0, ==, 1, "Zero should not be one!", [&] (const BADAssException &exc)
         {
-            CHECK_EQUAL("one", exc.leftHandSide());
+            CHECK_EQUAL(0, atoi(exc.leftHandSide().c_str()));
             CHECK_EQUAL(1, atoi(exc.rightHandSide().c_str()));
             CHECK_EQUAL("==", exc.comparisonOperator());
 
