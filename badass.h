@@ -30,6 +30,11 @@ constexpr double dlim = std::pow(10, -(std::numeric_limits<double>::digits10 + 1
     ? BADAss(A - B, <=, lim + dlim, ##__VA_ARGS__) \
     : BADAss(B - A, <=, lim + dlim, ##__VA_ARGS__))
 
+#define BADAssDiffer(A, B, lim, ...) \
+    ((A > B) \
+    ? BADAss(A - B, >, lim + dlim, ##__VA_ARGS__) \
+    : BADAss(B - A, >, lim + dlim, ##__VA_ARGS__))
+
 #define BADAssBool(expr, ...) \
     BADAssEqual((expr), true, ##__VA_ARGS__)
 
