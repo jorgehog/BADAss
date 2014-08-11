@@ -3,6 +3,8 @@
 #include <functional>
 #include <string>
 #include <stdexcept>
+#include <iostream>
+#include <sstream>
 
 using std::string;
 using std::cerr;
