@@ -12,7 +12,6 @@ using namespace badass;
 #define ADD_TEST_SUCCESS() CHECK_EQUAL(1, 1)
 #define ADD_TEST_FAILURE() CHECK_EQUAL(1, 0)
 
-
 TEST(ExceptionContents)
 {
     CHECK_EQUAL(numeric_limits<double>::digits10, round(-log10(dlim)) - 1);
@@ -29,7 +28,7 @@ TEST(ExceptionContents)
             CHECK_EQUAL(GETFILE(), exc.whichFile());
             CHECK_EQUAL("virtual void TestExceptionContents::RunImpl() const", exc.whichFunction());
             CHECK_EQUAL(GETLINE(), exc.whichLine());
-            CHECK_EQUAL("Zero should not be one!", exc.description());
+            CHECK_EQUAL("One should be 1!", exc.description());
 
         });
     }
@@ -38,6 +37,22 @@ TEST(ExceptionContents)
 
     }
 
+}
+
+TEST(SimpleMode)
+{
+    try
+    {
+        BADAss(1, ==, 0, "fail", [] ()
+        {
+            ADD_TEST_SUCCESS();
+        });
+    }
+    catch(const BADAssException &exc)
+    {
+        CHECK_EQUAL("fail", exc.description());
+        ADD_TEST_SUCCESS();
+    }
 }
 
 TEST(RandomCases)

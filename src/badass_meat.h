@@ -18,13 +18,13 @@ class BADAssException : public std::exception
 
 public:
     BADAssException(const char * OP,
-                 const char * A,
-                 const char * B,
-                 const char * file,
-                 const char * func,
-                 int line,
-                 string what,
-                 string message) :
+                    const char * A,
+                    const char * B,
+                    const char * file,
+                    const char * func,
+                    int line,
+                    string what,
+                    string message) :
         std::exception(),
         m_message(message),
         m_comparisonOperator(OP),
@@ -97,6 +97,7 @@ private:
 
 
 typedef std::function<void(const BADAssException &exc)> assertFireFuncType;
+typedef std::function<void()> assertFireFuncTypeNoExc;
 
 inline const assertFireFuncType quickie(const std::function<void()> &func)
 {
@@ -118,14 +119,14 @@ template<typename aT, typename bT>
 inline
 string
 getAssertMessage(aT Aval,
-                               bT Bval,
-                               const char * OP,
-                               const char * A,
-                               const char * B,
-                               const char * file,
-                               const char * func,
-                               int line,
-                               string what)
+                 bT Bval,
+                 const char * OP,
+                 const char * A,
+                 const char * B,
+                 const char * file,
+                 const char * func,
+                 int line,
+                 string what)
 {
     std::stringstream OP_B, assertMessage, assertCore;
     string OP_B_repl, A_repl;
@@ -186,9 +187,26 @@ getAssertMessage(aT Aval,
 
 }
 
-template<typename aT, typename bT>
+#include <utility>
+
+template<class T>
+struct checkEmptyArgs;
+
+template<class Ret, class T, class... Args>
+struct checkEmptyArgs<Ret(T::*)(Args...) const>
+{
+    constexpr static bool value = sizeof...(Args) == 0;
+};
+
+template<class T>
+int deduce(T t)
+{
+    return checkEmptyArgs<decltype(&T::operator())>::value;
+}
+
+template<typename aT, typename bT, typename fT>
 inline
-void
+typename std::enable_if<!checkEmptyArgs<decltype(&fT::operator())>::value, void>::type
 fireAssert(aT Aval,
            bT Bval,
            const char * OP,
@@ -198,22 +216,43 @@ fireAssert(aT Aval,
            const char * func,
            int line,
            string what,
-           const assertFireFuncType &onFireFunc)
+           const fT onFireFunc)
 {
 
     BADAssException exc(OP,
-                     A,
-                     B,
-                     file,
-                     func,
-                     line,
-                     what,
-                     getAssertMessage(Aval, Bval, OP, A, B, file, func, line, what));
+                        A,
+                        B,
+                        file,
+                        func,
+                        line,
+                        what,
+                        getAssertMessage(Aval, Bval, OP, A, B, file, func, line, what));
 
     onFireFunc(exc);
 
     throw exc;
 
+}
+
+template<typename aT, typename bT, typename fT>
+inline
+typename std::enable_if<checkEmptyArgs<decltype(&fT::operator())>::value, void>::type
+fireAssert(aT Aval,
+           bT Bval,
+           const char * OP,
+           const char * A,
+           const char * B,
+           const char * file,
+           const char * func,
+           int line,
+           string what,
+           const fT onFireFunc)
+{
+    fireAssert(Aval, Bval, OP, A, B, file, func, line, what, [&onFireFunc] (const BADAssException &exc)
+    {
+        (void) exc;
+        onFireFunc();
+    });
 }
 
 template<typename aT, typename bT>
@@ -229,7 +268,7 @@ fireAssert(aT Aval,
            int line,
            string what = "")
 {
-    fireAssert(Aval, Bval, OP, A, B, file, func, line, what, [] (const BADAssException &exc) {(void) exc;});
+    fireAssert(Aval, Bval, OP, A, B, file, func, line, what, [] () {});
 }
 
 }
