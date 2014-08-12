@@ -2,9 +2,11 @@
 
 #include <functional>
 #include <string>
+#include <string.h>
 #include <stdexcept>
 #include <iostream>
 #include <sstream>
+#include <stdio.h>
 
 using std::string;
 using std::cerr;
@@ -187,8 +189,6 @@ getAssertMessage(aT Aval,
 
 }
 
-#include <utility>
-
 template<class T>
 struct checkEmptyArgs;
 
@@ -199,10 +199,15 @@ struct checkEmptyArgs<Ret(T::*)(Args...) const>
 };
 
 template<class T>
-int deduce(T t)
+struct checkValidType;
+
+template<class Ret, class T, class... Args>
+struct checkValidType<Ret(T::*)(Args...) const>
 {
-    return checkEmptyArgs<decltype(&T::operator())>::value;
-}
+    constexpr static bool value = std::is_same<const BADAssException &, Args...>::value ||
+            std::is_same<const BADAssException, Args...>::value ||
+            std::is_same<BADAssException, Args...>::value;
+};
 
 template<typename aT, typename bT, typename fT>
 inline
@@ -218,6 +223,7 @@ fireAssert(aT Aval,
            string what,
            const fT onFireFunc)
 {
+    static_assert(checkValidType<decltype(&fT::operator())>::value, "invalid argument to fire function.");
 
     BADAssException exc(OP,
                         A,
