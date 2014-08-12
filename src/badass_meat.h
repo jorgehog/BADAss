@@ -97,15 +97,6 @@ private:
 
 };
 
-
-typedef std::function<void(const BADAssException &exc)> assertFireFuncType;
-typedef std::function<void()> assertFireFuncTypeNoExc;
-
-inline const assertFireFuncType quickie(const std::function<void()> &func)
-{
-    return [&func] (const BADAssException &exc) {(void) exc; func();};
-}
-
 inline void _searchRepl(string & _string, string _find, string _repl)
 {
 
@@ -223,7 +214,7 @@ fireAssert(aT Aval,
            string what,
            const fT onFireFunc)
 {
-    static_assert(checkValidType<decltype(&fT::operator())>::value, "invalid argument to fire function.");
+    static_assert(checkValidType<decltype(&fT::operator())>::value, "invalid argument type in assert fire function.");
 
     BADAssException exc(OP,
                         A,

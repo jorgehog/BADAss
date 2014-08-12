@@ -41,17 +41,18 @@ TEST(ExceptionContents)
 
 TEST(SimpleMode)
 {
+    int a = 0;
     try
     {
-        BADAss(1, ==, 0, "fail", [] ()
+        BADAss(1, ==, 0, "fail", [&a] ()
         {
-            ADD_TEST_SUCCESS();
+            a = 1;
         });
     }
     catch(const BADAssException &exc)
     {
         CHECK_EQUAL("fail", exc.description());
-        ADD_TEST_SUCCESS();
+        CHECK_EQUAL(1, a);
     }
 }
 
