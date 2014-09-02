@@ -17,10 +17,13 @@ constexpr double dlim = std::pow(10, -(std::numeric_limits<double>::digits10 + 1
     __PRETTY_FUNCTION__, \
     __LINE__, ##__VA_ARGS__))
 
+#define BADAssSimpleDump(...) \
+    badass::simpleDump(#__VA_ARGS__, ##__VA_ARGS__)
+
 #else
 #define BADAss(...) static_cast<void>(0)
+#define BADAssSimpleDump(...) static_cast<void>(0)
 #endif
-
 
 #define BADAssEqual(A, B, ...) \
     BADAss(A, ==, B, ##__VA_ARGS__)
@@ -40,8 +43,5 @@ constexpr double dlim = std::pow(10, -(std::numeric_limits<double>::digits10 + 1
 
 #define BADAssBreak(...) \
     BADAssBool(false, ##__VA_ARGS__)
-
-#define lallertest(...) \
-    badass::simpleDump(#__VA_ARGS__, ##__VA_ARGS__)
 
 
