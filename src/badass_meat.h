@@ -1,12 +1,21 @@
 #pragma once
 
-#include <functional>
+
 #include <string>
 #include <string.h>
-#include <stdexcept>
+
 #include <iostream>
-#include <sstream>
 #include <stdio.h>
+#include <iomanip>
+
+#include <sstream>
+
+#include <functional>
+
+#include <stdexcept>
+
+#include <vector>
+
 
 using std::string;
 using std::cerr;
@@ -97,7 +106,9 @@ private:
 
 };
 
-inline void _searchRepl(string & _string, string _find, string _repl)
+inline
+void
+_searchRepl(string & _string, string _find, string _repl)
 {
 
     int position = _string.find(_find);
@@ -267,5 +278,99 @@ fireAssert(aT Aval,
 {
     fireAssert(Aval, Bval, OP, A, B, file, func, line, what, [] () {});
 }
+
+//http://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
+// trim from start
+static inline std::string &ltrim(std::string &s) {
+        s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
+        return s;
+}
+
+// trim from end
+static inline std::string &rtrim(std::string &s) {
+        s.erase(std::find_if(s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
+        return s;
+}
+
+// trim from both ends
+static inline std::string &trim(std::string &s) {
+        return ltrim(rtrim(s));
+}
+
+
+
+//http://stackoverflow.com/questions/236129/how-to-split-a-string-in-c
+inline
+std::vector<std::string> &
+split(const std::string &s, char delim, std::vector<std::string> &elems, bool trimElements = false)
+{
+    std::stringstream ss(s);
+    std::string item;
+    while (std::getline(ss, item, delim)) {
+        elems.push_back(trimElements? trim(item) : item);
+    }
+    return elems;
+}
+
+inline
+std::vector<std::string>
+split(const std::string &s, char delim, bool trimElements = false)
+{
+    std::vector<std::string> elems;
+    split(s, delim, elems, trimElements);
+    return elems;
+}
+
+
+
+template<typename T>
+inline
+void
+_simpleDump_meat(const uint maxLength, const std::vector<string> &names, const uint level, const T &val)
+{
+    string name = names.at(level);
+    cout << "    " << std::setw(maxLength) << std::left << name << " " << *val << endl;
+}
+
+template<typename T, typename ...Args>
+inline
+void
+_simpleDump_meat(const uint maxLength, const std::vector<string> &names, const uint level, const T &val, const Args&... args)
+{
+    _simpleDump_meat(maxLength, names, level, val);
+    _simpleDump_meat(maxLength, names, level + 1, args...);
+}
+
+template<typename ...Args>
+inline
+void
+simpleDump(const char* concatenatedNamesCStr, const Args&... args)
+{
+    string concatenatedNames = string(concatenatedNamesCStr);
+    std::vector<string> names = split(concatenatedNames, ',', true);
+
+    if (names.empty()) return;
+
+    uint maxLength = names.at(0).size();
+
+    for (uint i = 1; i < names.size(); ++i)
+    {
+        if (names.at(i).size() > maxLength)
+        {
+            maxLength = names.at(i).size();
+        }
+    }
+
+    cout << std::setw(maxLength/2) << std::setfill('-') << std::right
+         << " " << "BADAss::simpleDump"
+         << std::setw(maxLength/2) << std::setfill('-') << std::left << " " << std::setfill(' ') << endl;
+
+    _simpleDump_meat(maxLength, names, 0, &args...);
+
+    cout << std::setw(maxLength + 18) << std::setfill('-') << "" << std::setfill(' ') << endl;
+
+}
+
+
 
 }

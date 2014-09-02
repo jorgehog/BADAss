@@ -40,3 +40,8 @@ constexpr double dlim = std::pow(10, -(std::numeric_limits<double>::digits10 + 1
 
 #define BADAssBreak(...) \
     BADAssBool(false, ##__VA_ARGS__)
+
+#define lallertest(...) \
+    badass::simpleDump(#__VA_ARGS__, ##__VA_ARGS__)
+
+
