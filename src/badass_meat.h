@@ -10,7 +10,10 @@
 
 #include <sstream>
 
+#include <algorithm>
 #include <functional>
+#include <cctype>
+#include <locale>
 
 #include <stdexcept>
 
@@ -329,7 +332,7 @@ void
 _simpleDump_meat(const uint maxLength, const std::vector<string> &names, const uint level, const T &val)
 {
     string name = names.at(level);
-    cout << "    " << std::setw(maxLength) << std::left << name << " " << *val << endl;
+    std::cout << "    " << std::setw(maxLength) << std::left << name << " " << *val << endl;
 }
 
 template<typename T, typename ...Args>
@@ -346,8 +349,10 @@ inline
 void
 simpleDump(const char* concatenatedNamesCStr, const Args&... args)
 {
+    using namespace std;
+
     string concatenatedNames = string(concatenatedNamesCStr);
-    std::vector<string> names = split(concatenatedNames, ',', true);
+    vector<string> names = split(concatenatedNames, ',', true);
 
     if (names.empty()) return;
 
@@ -361,13 +366,13 @@ simpleDump(const char* concatenatedNamesCStr, const Args&... args)
         }
     }
 
-    cout << std::setw(maxLength/2) << std::setfill('-') << std::right
-         << " " << "BADAss::simpleDump"
-         << std::setw(maxLength/2) << std::setfill('-') << std::left << " " << std::setfill(' ') << endl;
+    cout << setw(maxLength/2) << setfill('-') << right
+              << " " << "BADAss::simpleDump"
+              << setw(maxLength/2) << setfill('-') << left << " " << setfill(' ') << endl;
 
     _simpleDump_meat(maxLength, names, 0, &args...);
 
-    cout << std::setw(maxLength + 18) << std::setfill('-') << "" << std::setfill(' ') << endl;
+    cout << setw(maxLength + 18) << setfill('-') << "" << setfill(' ') << endl;
 
 }
 
