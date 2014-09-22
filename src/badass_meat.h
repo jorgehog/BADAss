@@ -122,9 +122,99 @@ _searchRepl(string & _string, string _find, string _repl)
     }
 }
 
-template<typename aT, typename bT>
 inline
 string
+_assertIntro(const char * OP,
+             const char * A,
+             const char * B,
+             const char * file,
+             const char * func,
+             int line)
+{
+    std::stringstream ss;
+    std::stringstream assertCore;
+    std::stringstream assertMessage;
+
+
+    assertMessage << file << ":" << line << ": " << func << ": ";
+
+
+    ss  << " " << OP << " " << B;
+
+    std::string OP_B = ss.str();
+    _searchRepl(OP_B, " == true", "");
+
+    std::string _A = std::string(A);
+    _searchRepl(_A, "false", "");
+
+
+    assertCore << _A << OP_B;
+
+
+    if (!assertCore.str().empty())
+    {
+        assertMessage << "Assertion '" << assertCore.str() << "' failed";
+    }
+    else
+    {
+        assertMessage << "Assertion failed";
+    }
+
+    return assertMessage.str();
+
+}
+
+
+
+template<typename aT, typename bT>
+inline
+std::string
+_valueAssert(aT Aval,
+             bT Bval,
+             const string OP)
+{
+    std::stringstream ss;
+
+
+    std::string s = "!" + OP;
+
+    _searchRepl(s, "!==", "!=");
+    _searchRepl(s, "!!=", "==");
+    _searchRepl(s, "!>=",  "<");
+    _searchRepl(s, "!<=",  ">");
+    _searchRepl(s, "!>" , "<=");
+    _searchRepl(s, "!<" , ">=");
+
+
+    ss << Aval << " " << s << " " << Bval;
+
+    return ss.str();
+}
+
+inline
+std::string
+_assertEnd(const string what)
+{
+    if (what.empty())
+    {
+        return ".";
+    }
+    else
+    {
+        return " : " + what;
+    }
+}
+
+template<typename T>
+struct
+is_coutable
+{
+    constexpr static bool value = std::is_convertible<T, std::basic_ofstream<char>>::value;
+};
+
+template<typename aT, typename bT>
+inline
+typename std::enable_if<is_coutable<aT>::value && is_coutable<bT>::value, string>::type
 getAssertMessage(aT Aval,
                  bT Bval,
                  const char * OP,
@@ -135,60 +225,39 @@ getAssertMessage(aT Aval,
                  int line,
                  string what)
 {
-    std::stringstream OP_B, assertMessage, assertCore;
-    string OP_B_repl, A_repl;
+    std::stringstream assertMessage;
 
+    assertMessage << _assertIntro(OP, A, B, file, func, line);
 
-    OP_B  << " " << OP << " " << B;
+    assertMessage << _valueAssert(Aval, Bval, OP);
 
-    OP_B_repl = OP_B.str();
-    _searchRepl(OP_B_repl, " == true", "");
+    assertMessage << _assertEnd(what);
 
+    return assertMessage.str();
 
-    A_repl    = string(A);
-    _searchRepl(A_repl   , "false", "");
+}
 
+template<typename aT, typename bT>
+inline
+typename std::enable_if<!(is_coutable<aT>::value && is_coutable<bT>::value), string>::type
+getAssertMessage(aT Aval,
+                 bT Bval,
+                 const char * OP,
+                 const char * A,
+                 const char * B,
+                 const char * file,
+                 const char * func,
+                 int line,
+                 string what)
+{
+    (void) Aval;
+    (void) Bval;
 
-    assertMessage <<  file << ":" << line << ": " << func << ": ";
+    std::stringstream assertMessage;
 
-    assertCore << A_repl << OP_B_repl;
+    assertMessage << _assertIntro(OP, A, B, file, func, line);
 
-    if (!assertCore.str().empty())
-    {
-
-        assertMessage << "Assertion '" << assertCore.str() << "' failed: ";
-
-        OP_B.str(string());
-
-        OP_B << "!" << OP;
-
-        OP_B_repl = OP_B.str();
-
-        _searchRepl(OP_B_repl, "!==", "!=");
-        _searchRepl(OP_B_repl, "!!=", "==");
-        _searchRepl(OP_B_repl, "!>=",  "<");
-        _searchRepl(OP_B_repl, "!<=",  ">");
-        _searchRepl(OP_B_repl, "!>" , "<=");
-        _searchRepl(OP_B_repl, "!<" , ">=");
-
-
-        assertMessage << Aval << " " <<  OP_B_repl << " " << Bval;
-
-    }
-
-    else
-    {
-        assertMessage << "Assertion failed";
-    }
-
-    if (what.empty())
-    {
-        assertMessage << ".";
-    }
-    else
-    {
-        assertMessage << " : " << what;
-    }
+    assertMessage << _assertEnd(what);
 
     return assertMessage.str();
 
