@@ -12,6 +12,76 @@ using namespace badass;
 #define ADD_TEST_SUCCESS() CHECK_EQUAL(1, 1)
 #define ADD_TEST_FAILURE() CHECK_EQUAL(1, 0)
 
+struct TEST_COUT
+{
+    int m_v;
+
+    TEST_COUT(int v)
+    {
+        m_v = v;
+    }
+
+    bool operator == (const TEST_COUT &other) const
+    {
+        return m_v == other.m_v;
+    }
+};
+
+struct TEST_COUT_STREAM
+{
+    int m_v;
+
+    TEST_COUT_STREAM(int v)
+    {
+        m_v = v;
+    }
+
+    bool operator == (const TEST_COUT &other) const
+    {
+        return m_v == other.m_v;
+    }
+};
+
+
+ostream &operator << (ostream &os, const TEST_COUT_STREAM &cs)
+{
+    os << cs.m_v;
+
+    return os;
+}
+
+TEST(coutable)
+{
+    CHECK(is_coutable<TEST_COUT>::value == false);
+    CHECK(is_coutable<int>::value == true);
+    CHECK(is_coutable<double>::value == true);
+    CHECK(is_coutable<char*>::value == true);
+    CHECK(is_coutable<string>::value == true);
+    CHECK(is_coutable<TEST_COUT_STREAM>::value == true);
+
+    try
+    {
+        int one = 0;
+        BADAss(one, ==, 1);
+    }
+    catch (const BADAssException &exc)
+    {
+        cout << "Does contain     0 != 1? " << exc.message() << endl;
+    }
+
+    try
+    {
+        auto t1 = TEST_COUT(1);
+        auto t2 = TEST_COUT(2);
+
+        BADAss(t1, ==, t2);
+    }
+    catch (const BADAssException &exc)
+    {
+        cout << "Does not contain 0 != 1? " << exc.message() << endl;
+    }
+}
+
 TEST(ExceptionContents)
 {
     CHECK_EQUAL(numeric_limits<double>::digits10, round(-log10(dlim)) - 1);

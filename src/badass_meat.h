@@ -57,6 +57,11 @@ public:
         return m_message.c_str();
     }
 
+    const string message() const
+    {
+        return m_message;
+    }
+
     const string comparisonOperator() const
     {
         return m_comparisonOperator;
@@ -205,11 +210,26 @@ _assertEnd(const string what)
     }
 }
 
+//http://stackoverflow.com/questions/22758291/how-can-i-detect-if-a-type-can-be-streamed-to-an-stdostream
+template<typename S, typename T>
+class is_streamable
+{
+    template<typename SS, typename TT>
+    static auto test(int)
+    -> decltype( std::declval<SS&>() << std::declval<TT>(), std::true_type() );
+
+    template<typename, typename>
+    static auto test(...) -> std::false_type;
+
+public:
+    static const bool value = decltype(test<S,T>(0))::value;
+};
+
 template<typename T>
 struct
 is_coutable
 {
-    constexpr static bool value = std::is_convertible<T, std::basic_ofstream<char>>::value;
+    constexpr static bool value = is_streamable<decltype(std::cout), T>::value;
 };
 
 template<typename aT, typename bT>
@@ -229,7 +249,7 @@ getAssertMessage(aT Aval,
 
     assertMessage << _assertIntro(OP, A, B, file, func, line);
 
-    assertMessage << _valueAssert(Aval, Bval, OP);
+    assertMessage << ": " << _valueAssert(Aval, Bval, OP);
 
     assertMessage << _assertEnd(what);
 
