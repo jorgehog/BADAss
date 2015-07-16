@@ -330,7 +330,11 @@ fireAssert(aT Aval,
 
     onFireFunc(exc);
 
+#ifndef BADASSNOTHROW
     throw exc;
+#else
+    cerr << exc.message() << endl;
+#endif
 
 }
 
