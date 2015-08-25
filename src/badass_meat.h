@@ -477,8 +477,8 @@ simpleDump(const char* concatenatedNamesCStr, const Args&... args)
 }
 
 template<typename Ta, typename Tb, typename... Args>
-void check(const Ta &&a,
-           const Tb &&b,
+void check(const Ta &a,
+           const Tb &b,
            bool truthValue,
            const char * OP,
            const char * A,
@@ -493,6 +493,26 @@ void check(const Ta &&a,
         fireAssert(std::forward<const Ta>(a),
                    std::forward<const Tb>(b),
                    OP, A, B, file, func, line, args...);
+    }
+}
+
+template<typename Ta, typename Tb, typename... Args>
+void check(const Ta &&a,
+           const Tb &&b,
+           bool truthValue,
+           const char * OP,
+           const char * A,
+           const char * B,
+           const char * file,
+           const char * func,
+           int line,
+           const Args &&... args)
+{
+    if (!truthValue)
+    {
+        fireAssert(std::forward<const Ta>(a),
+                   std::forward<const Tb>(b),
+                   OP, A, B, file, func, line, std::forward<Args>(args)...);
     }
 }
 

@@ -12,21 +12,21 @@ inline double dlim()
 #ifndef NDEBUG
 
 #define BADAss(A, OP, B, ...) \
-    badass::check(std::move(A), std::move(B), (A) OP (B), #OP, #A, #B, \
-                  __FILE__, __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
+    do { \
+        const auto &_aV = A; \
+        const auto &_bV = B; \
+        badass::check(_aV, _bV, (_aV) OP (_bV), #OP, #A, #B, \
+                      __FILE__, __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__); \
+    } while(0)
 
 #define BADAssEqual(A, B, ...) \
     BADAss(A, ==, B, ##__VA_ARGS__)
 
 #define BADAssClose(A, B, lim, ...) \
-    ((A > B) \
-    ? BADAss(A - B, <=, lim + dlim(), ##__VA_ARGS__) \
-    : BADAss(B - A, <=, lim + dlim(), ##__VA_ARGS__))
+    BADAss(fabs(A - B), <=, lim + dlim(), ##__VA_ARGS__)
 
 #define BADAssDiffer(A, B, lim, ...) \
-    ((A > B) \
-    ? BADAss(A - B, >, lim + dlim(), ##__VA_ARGS__) \
-    : BADAss(B - A, >, lim + dlim(), ##__VA_ARGS__))
+    BADAss(fabs(A - B), >, lim + dlim(), ##__VA_ARGS__)
 
 #define BADAssBool(expr, ...) \
     BADAssEqual((expr), true, ##__VA_ARGS__)

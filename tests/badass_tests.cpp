@@ -199,7 +199,7 @@ TEST(RandomCases)
     catch(const BADAssException &exc)
     {
         ADD_TEST_SUCCESS();
-        CHECK_EQUAL("1.1 - 1", exc.leftHandSide());
+        CHECK_EQUAL("fabs(1 - 1.1)", exc.leftHandSide());
         CHECK_EQUAL("0.05 + dlim()", exc.rightHandSide());
         CHECK_EQUAL("<=", exc.comparisonOperator());
     }
@@ -220,6 +220,67 @@ TEST(RandomCases)
     }
 
 }
+
+class CallCounter
+{
+public:
+    CallCounter() {}
+
+    uint m_count = 0;
+
+    int magicFunction()
+    {
+        m_count++;
+        return 1;
+    }
+};
+
+TEST(double_function_call)
+{
+    CallCounter cc;
+
+    BADAssEqual(cc.magicFunction(), cc.magicFunction());
+
+    CHECK_EQUAL(2, cc.m_count);
+}
+
+class CopyCounter : public CallCounter
+{
+public:
+
+    CopyCounter() : CallCounter() {}
+
+    CopyCounter(const CopyCounter &other)
+    {
+        (void) other;
+        m_copies++;
+    }
+
+    static uint m_copies;
+
+    bool operator==(const CopyCounter &other) const
+    {
+        (void) other;
+        return true;
+    }
+};
+
+uint CopyCounter::m_copies = 0;
+
+TEST(copy_call)
+{
+    CopyCounter cc;
+    CopyCounter cc2;
+
+    CopyCounter cc3 = cc;
+    (void) cc3;
+
+    BADAss(cc, ==, cc2);
+
+    CHECK_EQUAL(1, CopyCounter::m_copies);
+
+}
+
 
 int main()
 {
