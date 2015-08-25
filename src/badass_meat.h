@@ -488,12 +488,7 @@ void check(const Ta &&a,
            int line,
            Args ... args)
 {
-    if (truthValue)
-    {
-        static_cast<void>(0);
-    }
-
-    else
+    if (!truthValue)
     {
         fireAssert(std::forward<const Ta>(a),
                    std::forward<const Tb>(b),
