@@ -84,7 +84,7 @@ TEST(coutable)
 
 TEST(ExceptionContents)
 {
-    CHECK_EQUAL(numeric_limits<double>::digits10, round(-log10(dlim)) - 1);
+    CHECK_EQUAL(numeric_limits<double>::digits10, round(-log10(dlim())) - 1);
 
     try
     {
@@ -200,7 +200,7 @@ TEST(RandomCases)
     {
         ADD_TEST_SUCCESS();
         CHECK_EQUAL("1.1 - 1", exc.leftHandSide());
-        CHECK_EQUAL("0.05 + dlim", exc.rightHandSide());
+        CHECK_EQUAL("0.05 + dlim()", exc.rightHandSide());
         CHECK_EQUAL("<=", exc.comparisonOperator());
     }
 

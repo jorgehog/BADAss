@@ -327,8 +327,8 @@ fireAssert(const aT &&Aval,
                         func,
                         line,
                         what,
-                        getAssertMessage(std::forward<aT>(Aval),
-                                         std::forward<bT>(Bval),
+                        getAssertMessage(std::forward<const aT>(Aval),
+                                         std::forward<const bT>(Bval),
                                          OP, A, B, file, func, line, what));
 
     onFireFunc(exc);
@@ -355,8 +355,8 @@ fireAssert(const aT &&Aval,
            string what,
            const fT onFireFunc)
 {
-    fireAssert(std::forward<aT>(Aval),
-               std::forward<bT>(Bval),
+    fireAssert(std::forward<const aT>(Aval),
+               std::forward<const bT>(Bval),
                OP, A, B, file, func, line, what, [&onFireFunc] (const BADAssException &exc)
     {
         (void) exc;
@@ -377,7 +377,9 @@ fireAssert(const aT &&Aval,
            int line,
            string what = "")
 {
-    fireAssert(std::forward<aT>(Aval), std::forward<bT>(Bval), OP, A, B, file, func, line, what, [] () {});
+    fireAssert(std::forward<const aT>(Aval),
+               std::forward<const bT>(Bval),
+               OP, A, B, file, func, line, what, [] () {});
 }
 
 //http://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
@@ -493,8 +495,9 @@ void check(const Ta &&a,
 
     else
     {
-        fireAssert(std::forward<Ta>(a), std::forward<Tb>(b), OP, A, B,
-                   file, func, line, args...);
+        fireAssert(std::forward<const Ta>(a),
+                   std::forward<const Tb>(b),
+                   OP, A, B, file, func, line, args...);
     }
 }
 
