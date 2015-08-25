@@ -15,6 +15,7 @@ inline double dlim()
     badass::check(std::move(A), std::move(B), (A) OP (B), #OP, #A, #B, \
                   __FILE__, __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 
+
 #define BADAssEqual(A, B, ...) \
     BADAss(A, ==, B, ##__VA_ARGS__)
 
