@@ -10,6 +10,7 @@
 
 #include <sstream>
 
+#include <utility>
 #include <algorithm>
 #include <functional>
 #include <cctype>
@@ -227,7 +228,7 @@ public:
 
 template<typename T>
 struct
-is_coutable
+        is_coutable
 {
     constexpr static bool value = is_streamable<decltype(std::cout), T>::value;
 };
@@ -260,8 +261,8 @@ getAssertMessage(aT Aval,
 template<typename aT, typename bT>
 inline
 typename std::enable_if<!(is_coutable<aT>::value && is_coutable<bT>::value), string>::type
-getAssertMessage(aT Aval,
-                 bT Bval,
+getAssertMessage(const aT &&Aval,
+                 const bT &&Bval,
                  const char * OP,
                  const char * A,
                  const char * B,
@@ -306,8 +307,8 @@ struct checkValidType<Ret(T::*)(Args...) const>
 template<typename aT, typename bT, typename fT>
 inline
 typename std::enable_if<!checkEmptyArgs<decltype(&fT::operator())>::value, void>::type
-fireAssert(aT Aval,
-           bT Bval,
+fireAssert(const aT &&Aval,
+           const bT &&Bval,
            const char * OP,
            const char * A,
            const char * B,
@@ -326,19 +327,25 @@ fireAssert(aT Aval,
                         func,
                         line,
                         what,
-                        getAssertMessage(Aval, Bval, OP, A, B, file, func, line, what));
+                        getAssertMessage(std::forward<const aT>(Aval),
+                                         std::forward<const bT>(Bval),
+                                         OP, A, B, file, func, line, what));
 
     onFireFunc(exc);
 
+#ifndef BADASSNOTHROW
     throw exc;
+#else
+    cerr << exc.message() << endl;
+#endif
 
 }
 
 template<typename aT, typename bT, typename fT>
 inline
 typename std::enable_if<checkEmptyArgs<decltype(&fT::operator())>::value, void>::type
-fireAssert(aT Aval,
-           bT Bval,
+fireAssert(const aT &&Aval,
+           const bT &&Bval,
            const char * OP,
            const char * A,
            const char * B,
@@ -348,7 +355,9 @@ fireAssert(aT Aval,
            string what,
            const fT onFireFunc)
 {
-    fireAssert(Aval, Bval, OP, A, B, file, func, line, what, [&onFireFunc] (const BADAssException &exc)
+    fireAssert(std::forward<const aT>(Aval),
+               std::forward<const bT>(Bval),
+               OP, A, B, file, func, line, what, [&onFireFunc] (const BADAssException &exc)
     {
         (void) exc;
         onFireFunc();
@@ -358,8 +367,8 @@ fireAssert(aT Aval,
 template<typename aT, typename bT>
 inline
 void
-fireAssert(aT Aval,
-           bT Bval,
+fireAssert(const aT &&Aval,
+           const bT &&Bval,
            const char * OP,
            const char * A,
            const char * B,
@@ -368,25 +377,27 @@ fireAssert(aT Aval,
            int line,
            string what = "")
 {
-    fireAssert(Aval, Bval, OP, A, B, file, func, line, what, [] () {});
+    fireAssert(std::forward<const aT>(Aval),
+               std::forward<const bT>(Bval),
+               OP, A, B, file, func, line, what, [] () {});
 }
 
 //http://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
 // trim from start
 static inline std::string &ltrim(std::string &s) {
-        s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
-        return s;
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
+    return s;
 }
 
 // trim from end
 static inline std::string &rtrim(std::string &s) {
-        s.erase(std::find_if(s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
-        return s;
+    s.erase(std::find_if(s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
+    return s;
 }
 
 // trim from both ends
 static inline std::string &trim(std::string &s) {
-        return ltrim(rtrim(s));
+    return ltrim(rtrim(s));
 }
 
 
@@ -456,8 +467,8 @@ simpleDump(const char* concatenatedNamesCStr, const Args&... args)
     }
 
     cout << setw(maxLength/2) << setfill('-') << right
-              << " " << "BADAss::simpleDump"
-              << setw(maxLength/2) << setfill('-') << left << " " << setfill(' ') << endl;
+         << " " << "BADAss::simpleDump"
+         << setw(maxLength/2) << setfill('-') << left << " " << setfill(' ') << endl;
 
     _simpleDump_meat(maxLength, names, 0, &args...);
 
@@ -465,6 +476,29 @@ simpleDump(const char* concatenatedNamesCStr, const Args&... args)
 
 }
 
+template<typename Ta, typename Tb, typename... Args>
+void check(const Ta &&a,
+           const Tb &&b,
+           bool truthValue,
+           const char * OP,
+           const char * A,
+           const char * B,
+           const char * file,
+           const char * func,
+           int line,
+           Args ... args)
+{
+    if (truthValue)
+    {
+        static_cast<void>(0);
+    }
 
+    else
+    {
+        fireAssert(std::forward<const Ta>(a),
+                   std::forward<const Tb>(b),
+                   OP, A, B, file, func, line, args...);
+    }
+}
 
 }
