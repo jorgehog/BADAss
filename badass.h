@@ -23,10 +23,10 @@ inline double dlim()
     BADAss(A, ==, B, ##__VA_ARGS__)
 
 #define BADAssClose(A, B, lim, ...) \
-    BADAss(fabs(A - B), <=, lim + dlim(), ##__VA_ARGS__)
+    BADAss(fabs(A - (B)), <=, lim + dlim(), ##__VA_ARGS__)
 
 #define BADAssDiffer(A, B, lim, ...) \
-    BADAss(fabs(A - B), >, lim + dlim(), ##__VA_ARGS__)
+    BADAss(fabs(A - (B)), >, lim + dlim(), ##__VA_ARGS__)
 
 #define BADAssBool(expr, ...) \
     BADAssEqual((expr), true, ##__VA_ARGS__)
