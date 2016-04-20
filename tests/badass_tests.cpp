@@ -199,7 +199,7 @@ TEST(RandomCases)
     catch(const BADAssException &exc)
     {
         ADD_TEST_SUCCESS();
-        CHECK_EQUAL("fabs(1 - 1.1)", exc.leftHandSide());
+        CHECK_EQUAL("fabs(1 - (1.1))", exc.leftHandSide());
         CHECK_EQUAL("0.05 + dlim()", exc.rightHandSide());
         CHECK_EQUAL("<=", exc.comparisonOperator());
     }
